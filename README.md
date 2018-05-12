@@ -30,7 +30,7 @@ In application:
 document.addEventListener('chunk-progress-webpack-plugin', function(event) {
 	event.detail.loaded; // total bytes loaded
 	event.detail.total; // total bytes requested
-    event.detail.loaded / event.detail.total * 100; // total progress percentage
+	event.detail.loaded / event.detail.total * 100; // total progress percentage
 	const resource = event.detail.resource; // info about resource that triggered the event
 	resource.loaded;
 	resource.total;
