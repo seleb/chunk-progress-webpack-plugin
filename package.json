@@ -1,0 +1,20 @@
+{
+  "name": "chunk-progress-webpack-plugin",
+  "version": "1.0.0",
+  "description": "Provides runtime progress events by replacing default webpack chunk loading with XHR",
+  "main": "index.js",
+  "scripts": {
+  },
+  "keywords": [
+    "chunk",
+    "webpack",
+    "plugin",
+    "javascript"
+  ],
+  "author": "Sean S. LeBlanc <sean.s.leblanc@gmail.com>",
+  "repository": "https://github.com/seleb/chunk-progress-webpack-plugin.git",
+  "license": "MIT",
+  "peerDependencies": {
+    "webpack": "^4.0.0"
+  }
+}
