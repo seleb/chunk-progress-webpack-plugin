@@ -77,6 +77,7 @@ function replaceRequireEnsure(chunkId) {
 							document.dispatchEvent(new CustomEvent(
 								'chunk-progress-webpack-plugin', {
 									detail: {
+										originalEvent: event,
 										loaded: loaded,
 										total: progress.totalSize,
 										resource: {
