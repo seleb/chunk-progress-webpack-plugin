@@ -1,6 +1,6 @@
 {
   "name": "chunk-progress-webpack-plugin",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Provides runtime progress events by replacing default webpack chunk loading with XHR",
   "main": "index.js",
   "scripts": {},
