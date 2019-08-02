@@ -62,28 +62,29 @@ function replaceRequireEnsure(chunkId) {
 					xhr.onload = resolve;
 					xhr.onerror = reject;
 					xhr.send();
-				}).then(function (event) {
-					progress.totalSize += parseInt(event.target.getResponseHeader('content-length'), 10);
+				}).then(function (requestEvent) {
+					progress.totalSize += parseInt(requestEvent.target.getResponseHeader('content-length'), 10);
 					return new Promise(function (resolve, reject) {
 						var xhr = new XMLHttpRequest();
 						xhr.open('GET', url);
 						xhr.onload = resolve;
 						xhr.onerror = reject;
-						xhr.onprogress = function (event) {
+						xhr.onprogress = function (progressEvent) {
 							var loaded = Object.values(progress.activeLoads).reduce(function (sum, num) {
 								return num + sum;
 							});
-							progress.activeLoads[url] = event.loaded;
+							progress.activeLoads[url] = progressEvent.loaded;
 							document.dispatchEvent(new CustomEvent(
 								'chunk-progress-webpack-plugin', {
 									detail: {
-										originalEvent: event,
+										originalEvent: progressEvent,
+										originalRequestEvent: requestEvent,
 										loaded: loaded,
 										total: progress.totalSize,
 										resource: {
 											url: url,
-											loaded: event.loaded,
-											total: event.total
+											loaded: progressEvent.loaded,
+											total: progressEvent.total
 										}
 									}
 								}));
