@@ -49,6 +49,8 @@ function replaceRequireEnsure(chunkId) {
 
 			// start chunk loading
 			var url = __webpack_require__.p + __webpack_require__.u(chunkId);
+			// create error before stack unwound to get useful stacktrace later
+			var error = new Error();
 			progress.activeLoads[url] = 0;
 			progress.activeLoadCount += 1;
 			promises.push(installedChunkData[2] = promise);
@@ -131,7 +133,8 @@ function replaceRequireEnsure(chunkId) {
 					if (chunk) {
 						var errorType = event && (event.type === 'load' ? 'missing' : event.type);
 						var realSrc = event && event.target && event.target.src;
-						var error = new Error('Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')');
+						error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+						error.name = 'ChunkLoadError';
 						error.type = errorType;
 						error.request = realSrc;
 						chunk[1](error);
