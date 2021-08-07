@@ -29,13 +29,16 @@ function addProgressVars() {
 		activeLoadCount: 0,
 		activeLoads: {},
 	};
+	var installedChunks = {
+		main: 0,
+	};
 	// chunk-progress-webpack-plugin add-progress-vars end
 }
 
 function replaceRequireEnsure(chunkId) {
 	// chunk-progress-webpack-plugin replace-require-ensure start
-	var installedChunkData = installedChunks[chunkId];
 	if (installedChunkData !== 0) { // 0 means "already installed".
+	var installedChunkData = __webpack_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
 		if (installedChunkData) {
 			promises.push(installedChunkData[2]);
 		} else {
@@ -44,7 +47,8 @@ function replaceRequireEnsure(chunkId) {
 				installedChunkData = installedChunks[chunkId] = [resolve, reject];
 			});
 
-			var url = jsonpScriptSrc(chunkId);
+			// start chunk loading
+			var url = __webpack_require__.p + __webpack_require__.u(chunkId);
 			progress.activeLoads[url] = 0;
 			progress.activeLoadCount += 1;
 			promises.push(installedChunkData[2] = promise);
@@ -57,12 +61,13 @@ function replaceRequireEnsure(chunkId) {
 			}, 120000);
 
 			new Promise(function (resolve, reject) {
-					var xhr = new XMLHttpRequest();
-					xhr.open('HEAD', url);
-					xhr.onload = resolve;
-					xhr.onerror = reject;
-					xhr.send();
-				}).then(function (requestEvent) {
+				var xhr = new XMLHttpRequest();
+				xhr.open('HEAD', url);
+				xhr.onload = resolve;
+				xhr.onerror = reject;
+				xhr.send();
+			})
+				.then(function (requestEvent) {
 					progress.totalSize += parseInt(requestEvent.target.getResponseHeader('content-length'), 10);
 					return new Promise(function (resolve, reject) {
 						var xhr = new XMLHttpRequest();
@@ -117,7 +122,12 @@ function replaceRequireEnsure(chunkId) {
 				}
 				clearTimeout(timeout);
 				var chunk = installedChunks[chunkId];
-				if (chunk !== 0) {
+				if (!event) {
+					chunk[0]();
+					return;
+				}
+				if (__webpack_require__.o(installedChunks, chunkId)) {
+					if (chunk !== 0) installedChunks[chunkId] = undefined;
 					if (chunk) {
 						var errorType = event && (event.type === 'load' ? 'missing' : event.type);
 						var realSrc = event && event.target && event.target.src;
