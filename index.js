@@ -2,10 +2,7 @@ class ChunkProgressWebpackPlugin {
 	apply(compiler) {
 		compiler.hooks.compilation.tap('chunk-progress-webpack-plugin', function (compilation) {
 			compilation.mainTemplate.hooks.localVars.tap('add-progress-vars', function (source) {
-				return [
-					source,
-					functionBody(addProgressVars)
-				].join('\n');
+				return [source, functionBody(addProgressVars)].join('\n');
 			});
 			compilation.mainTemplate.hooks.requireEnsure.tap('replace-require-ensure', function () {
 				return functionBody(replaceRequireEnsure);
@@ -19,7 +16,7 @@ module.exports = ChunkProgressWebpackPlugin;
 // helper for returning contents of a function
 function functionBody(fn) {
 	const str = fn.toString();
-	return str.slice(str.indexOf("{") + 1, str.lastIndexOf("}"));
+	return str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'));
 }
 
 function addProgressVars() {
@@ -37,15 +34,15 @@ function addProgressVars() {
 
 function replaceRequireEnsure(chunkId) {
 	// chunk-progress-webpack-plugin replace-require-ensure start
-	if (installedChunkData !== 0) { // 0 means "already installed".
 	var installedChunkData = __webpack_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
+	if (installedChunkData !== 0) {
+		// 0 means "already installed".
 		if (installedChunkData) {
 			promises.push(installedChunkData[2]);
 		} else {
 			// setup Promise in chunk cache
-			var promise = new Promise(function (resolve, reject) {
-				installedChunkData = installedChunks[chunkId] = [resolve, reject];
-			});
+			var promise = new Promise((resolve, reject) => (installedChunkData = installedChunks[chunkId] = [resolve, reject]));
+			promises.push((installedChunkData[2] = promise));
 
 			// start chunk loading
 			var url = __webpack_require__.p + __webpack_require__.u(chunkId);
@@ -53,12 +50,11 @@ function replaceRequireEnsure(chunkId) {
 			var error = new Error();
 			progress.activeLoads[url] = 0;
 			progress.activeLoadCount += 1;
-			promises.push(installedChunkData[2] = promise);
 
 			var timeout = setTimeout(function () {
 				onScriptComplete({
 					type: 'timeout',
-					target: script
+					target: script,
 				});
 			}, 120000);
 
@@ -81,8 +77,8 @@ function replaceRequireEnsure(chunkId) {
 								return num + sum;
 							});
 							progress.activeLoads[url] = progressEvent.loaded;
-							document.dispatchEvent(new CustomEvent(
-								'chunk-progress-webpack-plugin', {
+							document.dispatchEvent(
+								new CustomEvent('chunk-progress-webpack-plugin', {
 									detail: {
 										originalEvent: progressEvent,
 										originalRequestEvent: requestEvent,
@@ -91,10 +87,11 @@ function replaceRequireEnsure(chunkId) {
 										resource: {
 											url: url,
 											loaded: progressEvent.loaded,
-											total: progressEvent.total
-										}
-									}
-								}));
+											total: progressEvent.total,
+										},
+									},
+								})
+							);
 						};
 						xhr.send();
 					});
@@ -112,7 +109,7 @@ function replaceRequireEnsure(chunkId) {
 					onScriptComplete();
 				})
 				.catch(function (error) {
-					onScriptComplete(error)
+					onScriptComplete(error);
 				});
 
 			function onScriptComplete(event) {
