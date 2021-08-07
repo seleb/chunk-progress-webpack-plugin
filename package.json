@@ -14,6 +14,6 @@
   "repository": "https://github.com/seleb/chunk-progress-webpack-plugin.git",
   "license": "MIT",
   "peerDependencies": {
-    "webpack": "^4.0.0"
+    "webpack": "^5.0.0"
   }
 }
